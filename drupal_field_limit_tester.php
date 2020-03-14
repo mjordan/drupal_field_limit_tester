@@ -1,0 +1,255 @@
+<?php
+
+/**
+ * Script to generate a Drupal 8 module that creates a content type and
+ * as many fields as you want.
+ *
+ * This script comes with absolutely no warranty. By reading this
+ * sentence you give up all rights to blame its author if your Drupal
+ * instance blows up real good.
+ *
+ * This script is in the public domain.
+ */
+
+/**
+ * You may want to adjust these variables.
+ */
+$module_directory = 'maxfieldtest';
+$module_name = 'Max Field Test';
+$module_description = 'A module that generates a content type and adds a bunch of fields.';
+$num_fields = 20;
+
+
+/**
+ * You don't need to touch anything below this line. But you can if you want.
+ */
+
+$module_machine_name = basename($module_directory);
+
+$info_yaml = <<< INFO
+name: "$module_name"
+description: "$module_description"
+type: module
+core: 8.x
+INFO;
+
+$content_type_yaml = <<<CTYPE
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - $module_machine_name
+  module:
+    - menu_ui
+third_party_settings:
+  menu_ui:
+    available_menus:
+      - main
+    parent: 'main:'
+name: "Content type created by $module_name module"
+type: $module_machine_name
+description: 'Content type for testing maximum number of fields.'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: true
+CTYPE;
+
+if (file_exists($module_directory)) {
+    exit("Sorry, the module directory $module_directory already exists\n");
+}
+
+mkdir($module_directory);
+$info_file_path = $module_directory .
+    DIRECTORY_SEPARATOR . $module_machine_name . '.info.yml';
+file_put_contents($info_file_path, $info_yaml);
+
+mkdir($module_directory . DIRECTORY_SEPARATOR . 'config');
+$install_files_directory = $module_directory . 
+    DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'install';
+mkdir($install_files_directory);
+
+$content_type_file_path = $install_files_directory . 
+    DIRECTORY_SEPARATOR . 'node.type.' . $module_machine_name . '.yml';
+file_put_contents($content_type_file_path, $content_type_yaml);
+
+for ($i = 1; $i <= $num_fields; $i++) {
+    $field_suffix = str_pad($i, 5, "0", STR_PAD_LEFT);
+    $field_machine_name = 'field_maxtest' . $field_suffix;
+
+$field_definition_yml = <<<FIELD
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - $module_machine_name
+  config:
+    - field.storage.node.$field_machine_name
+    - node.type.$module_machine_name
+id: node.$module_machine_name.$field_machine_name
+field_name: $field_machine_name
+entity_type: node
+bundle: $module_machine_name
+label: "Test field $field_suffix" 
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string
+FIELD;
+
+    $field_definition_file_path = $install_files_directory . 
+        DIRECTORY_SEPARATOR . 'field.field.node.' . $module_machine_name . 
+        '.' . $field_machine_name . '.yml';
+    file_put_contents($field_definition_file_path, $field_definition_yml);
+
+$field_storage_yml = <<<STORAGE
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - node
+      - $module_machine_name
+id: node.$field_machine_name
+field_name: $field_machine_name
+entity_type: node
+type: string
+settings:
+  max_length: 255
+  is_ascii: false
+  case_sensitive: false
+module: core
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false
+STORAGE;
+
+    $field_storage_file_path = $install_files_directory . 
+        DIRECTORY_SEPARATOR . 'field.storage.node.' . $field_machine_name . '.yml';
+    file_put_contents($field_storage_file_path, $field_storage_yml);
+}
+
+$node_form_display_yml = <<<FORMDISPLAY1
+langcode: en
+status: true
+dependencies:
+  config:
+FORMDISPLAY1;
+
+$node_form_display_yml .= "\n";
+for ($i = 1; $i <= $num_fields; $i++) {
+    $field_suffix = str_pad($i, 5, "0", STR_PAD_LEFT);
+    $field_machine_name = 'field_maxtest' . $field_suffix;
+    $node_form_display_yml .= "     - field.field.node.$module_machine_name.$field_machine_name\n";
+}
+
+$node_form_display_yml .= <<<FORMDISPLAY2
+     - node.type.$module_machine_name
+  enforced:
+    module:
+      - $module_machine_name
+  module:
+    - path
+third_party_settings: { }
+id: node.$module_machine_name.default
+targetEntityType: node
+bundle: $module_machine_name
+mode: default
+content:
+  created:
+    type: datetime_timestamp
+    weight: 8
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+FORMDISPLAY2;
+
+for ($i = 1; $i <= $num_fields; $i++) {
+    $field_suffix = str_pad($i, 5, "0", STR_PAD_LEFT);
+    $field_machine_name = 'field_maxtest' . $field_suffix;
+
+$node_form_display_yml .= "\n" . <<<FORMDISPLAY3
+  $field_machine_name:
+    type: string_textfield
+    weight: 1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+FORMDISPLAY3;
+}
+
+$node_form_display_yml .= "\n" . <<<FORMDISPLAY4
+  langcode:
+    type: language_select
+    weight: 5
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  promote:
+    type: boolean_checkbox
+    weight: 6
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 5
+    region: content
+    third_party_settings: {  }
+  sticky:
+    type: boolean_checkbox
+    weight: 9
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  translation:
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 7
+    region: content
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden: {  }
+FORMDISPLAY4;
+
+    $node_form_display_file_path = $install_files_directory . 
+        DIRECTORY_SEPARATOR . 'core.entity_form_display.node.' . $module_machine_name . '.default.yml';
+    file_put_contents($node_form_display_file_path, $node_form_display_yml);
+
+print "Your Drupal module is in $module_directory. Have a nice day!\n";
