@@ -2,9 +2,9 @@
 
 PHP script that generates a simple Drupal 8 module that installs however many fields you want.
 
-The resulting module tests the limits of a Drupal instance and is NOT intended to be installed on production instances. In fact, it might bork your Drupal instance.
+The resulting module tests the limits of a Drupal instance and is NOT intended to be installed on production instances. In fact, it might bork your Drupal instance. It might be a good idea to spin up a sacrificial instance just to use this on, especially if you set the number of fields to some crazy number like 1000.
 
-This script comes with absolutely no warranty. By reading this sentence you give up all rights to blame its author if your Drupal instance blows up real good.
+This script comes with absolutely no warranty. By reading this sentence you give up all rights to blame its author if your Drupal instance [blows up real good](https://www.youtube.com/watch?v=uHkvD7-u7y8).
 
 # Usage
 
@@ -79,6 +79,5 @@ Installing the module in your Drupal instance will create a new content type and
 
 # To do
 
-The fields show up in the node edit form, but I can't figure out how to get them to show up in the node view.
+The fields show up in the node edit form, but I can't figure out how to get them to show up in the node view. Would be good to get this working.
 
-2 directories, 43 files
