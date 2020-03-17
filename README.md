@@ -31,6 +31,7 @@ maxfieldtest/
 ├── config
 │   └── install
 │       ├── core.entity_form_display.node.maxfieldtest.default.yml
+│       ├── core.entity_view_display.node.maxfieldtest.default.yml
 │       ├── field.field.node.maxfieldtest.field_maxtest00001.yml
 │       ├── field.field.node.maxfieldtest.field_maxtest00002.yml
 │       ├── field.field.node.maxfieldtest.field_maxtest00003.yml
@@ -77,7 +78,7 @@ maxfieldtest/
 
 Installing the module in your Drupal instance will create a new content type and attach 20 test fields to it.
 
-# To do
+# Author
 
-The fields show up in the node edit form, but I can't figure out how to get them to show up in the node view. Would be good to get this working.
+Mark Jordan (https://github.com/mjordan)
 

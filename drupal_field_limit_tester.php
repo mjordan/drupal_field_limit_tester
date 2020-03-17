@@ -252,4 +252,52 @@ FORMDISPLAY4;
         DIRECTORY_SEPARATOR . 'core.entity_form_display.node.' . $module_machine_name . '.default.yml';
     file_put_contents($node_form_display_file_path, $node_form_display_yml);
 
+
+$node_view_display_yml = <<<VIEWDISPLAY
+langcode: en
+status: true
+dependencies:
+  config:
+VIEWDISPLAY;
+$node_view_display_yml .= "\n";
+for ($i = 1; $i <= $num_fields; $i++) {
+    $field_suffix = str_pad($i, 5, "0", STR_PAD_LEFT);
+    $field_machine_name = 'field_maxtest' . $field_suffix;
+    $node_view_display_yml .= "     - field.field.node.$module_machine_name.$field_machine_name\n";
+}
+
+$node_view_display_yml .= <<<VIEWDISPLAY2
+     - node.type.$module_machine_name
+  enforced:
+    module:
+      - $module_machine_name
+  module: { }
+id: node.$module_machine_name.default
+targetEntityType: node
+bundle: $module_machine_name
+mode: default
+content:
+VIEWDISPLAY2;
+
+for ($i = 1; $i <= $num_fields; $i++) {
+    $field_suffix = str_pad($i, 5, "0", STR_PAD_LEFT);
+    $field_machine_name = 'field_maxtest' . $field_suffix;
+
+$node_view_display_yml .= "\n" . <<<VIEWDISPLAY3
+  $field_machine_name:
+    type: string
+    region: content
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+VIEWDISPLAY3;
+}
+
+$node_view_display_yml .= "\nhidden: { }\n";
+
+    $node_view_display_file_path = $install_files_directory . 
+        DIRECTORY_SEPARATOR . 'core.entity_view_display.node.' . $module_machine_name . '.default.yml';
+    file_put_contents($node_view_display_file_path, $node_view_display_yml);
+
 print "Your Drupal module is in $module_directory. Have a nice day!\n";
