@@ -18,6 +18,8 @@ $module_directory = 'maxfieldtest';
 $module_name = 'Max Field Test';
 $module_description = 'A module that generates a content type and adds a bunch of fields.';
 $num_fields = 20;
+$path_to_word_file = './LICENSE';
+$num_csv_records = 10;
 ```
 
 Then, run the script:
@@ -27,7 +29,7 @@ Then, run the script:
 With the above variables, the following Drupal module will be generated:
 
 ```
-maxfieldtest/
+maxfieldtest
 ├── config
 │   └── install
 │       ├── core.entity_form_display.node.maxfieldtest.default.yml
@@ -73,10 +75,11 @@ maxfieldtest/
 │       ├── field.storage.node.field_maxtest00019.yml
 │       ├── field.storage.node.field_maxtest00020.yml
 │       └── node.type.maxfieldtest.yml
+├── maxfieldtest.csv
 └── maxfieldtest.info.yml
 ```
 
-Installing the module in your Drupal instance will create a new content type and attach 20 test fields to it.
+Installing the module in your Drupal instance will create a new content type and attach 20 test fields to it. A CSV file containing faked up data (by default, from randomized words drawn from the LICENESE file) is also generated so you can populate some nodes using the Migrate framework.
 
 # Author
 
