@@ -79,7 +79,7 @@ maxfieldtest
 └── maxfieldtest.info.yml
 ```
 
-Installing the module in your Drupal instance will create a new content type and attach 20 test fields to it. A CSV file containing faked up data (by default, from randomized words drawn from the LICENESE file) is also generated so you can populate some nodes using the Migrate framework.
+Installing the module in your Drupal instance will create a new content type and attach 20 test fields to it. A CSV file containing faked up data (by default, from randomized words drawn from the LICENSE file) is also generated so you can populate some nodes using the Migrate framework.
 
 # Author
 
