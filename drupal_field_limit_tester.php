@@ -18,6 +18,8 @@ $module_directory = 'maxfieldtest';
 $module_name = 'Max Field Test';
 $module_description = 'A module that generates a content type and adds a bunch of fields.';
 $num_fields = 20;
+$path_to_word_file = './LICENSE';
+$num_csv_records = 10;
 
 
 /**
@@ -26,6 +28,9 @@ $num_fields = 20;
 
 $module_machine_name = basename($module_directory);
 
+/**
+ * .info.yml file.
+ */
 $info_yaml = <<< INFO
 name: "$module_name"
 description: "$module_description"
@@ -56,6 +61,9 @@ preview_mode: 1
 display_submitted: true
 CTYPE;
 
+/**
+ * Create the module directory and write out the .info.yml file.
+ */
 if (file_exists($module_directory)) {
     exit("Sorry, the module directory $module_directory already exists\n");
 }
@@ -78,6 +86,10 @@ for ($i = 1; $i <= $num_fields; $i++) {
     $field_suffix = str_pad($i, 5, "0", STR_PAD_LEFT);
     $field_machine_name = 'field_maxtest' . $field_suffix;
 
+/**
+ * Generate the field definition and storage .yml files,
+ * one each per field.
+ */
 $field_definition_yml = <<<FIELD
 langcode: en
 status: true
@@ -137,6 +149,9 @@ STORAGE;
     file_put_contents($field_storage_file_path, $field_storage_yml);
 }
 
+/**
+ * Generate the form display .yml file.
+ */
 $node_form_display_yml = <<<FORMDISPLAY1
 langcode: en
 status: true
@@ -252,7 +267,9 @@ FORMDISPLAY4;
         DIRECTORY_SEPARATOR . 'core.entity_form_display.node.' . $module_machine_name . '.default.yml';
     file_put_contents($node_form_display_file_path, $node_form_display_yml);
 
-
+/**
+ * Generate the view display config file.
+ */
 $node_view_display_yml = <<<VIEWDISPLAY
 langcode: en
 status: true
@@ -299,5 +316,50 @@ $node_view_display_yml .= "\nhidden: { }\n";
     $node_view_display_file_path = $install_files_directory . 
         DIRECTORY_SEPARATOR . 'core.entity_view_display.node.' . $module_machine_name . '.default.yml';
     file_put_contents($node_view_display_file_path, $node_view_display_yml);
+
+
+/**
+ * Generate the CSV file.
+ */
+$word_file_contents = file_get_contents($path_to_word_file);
+$words = preg_split('/\s+/', $word_file_contents);
+$words = array_unique($words);
+$csv_data = [];
+$csv_header = [];
+
+for ($i = 1; $i <= $num_fields; $i++) {
+    $field_suffix = str_pad($i, 5, "0", STR_PAD_LEFT);
+    $field_machine_name = 'field_maxtest' . $field_suffix;
+    $csv_header[] = $field_machine_name;
+}
+$csv_data[] = $csv_header;
+for ($r = 1; $r <= $num_csv_records; $r++) {
+    $record = [];
+    for ($i = 1; $i <= $num_fields; $i++) {
+        $csv_value = get_random_sentence($words);
+        $record[] =  $csv_value;
+    }
+    $csv_data[] = $record;
+}
+
+$fp = fopen($module_directory . DIRECTORY_SEPARATOR . $module_machine_name . '.csv', 'w');
+foreach ($csv_data as $fields) {
+    fputcsv($fp, $fields);
+}
+
+function get_random_sentence($words) {
+    foreach ($words as &$word) {
+        $word = str_replace(array("\n", "\r", '.', ',', '<', '>', '"', "'"), '', $word);
+        $word = strtolower($word);
+    }
+    shuffle($words);
+    $random_words = array_slice($words, 0, rand(0,30));
+    $sentence = implode(' ', $random_words);
+    $sentence = ucfirst($sentence) . '.';
+    if (strlen($sentence) > 250) {
+        $sentence = substr($sentence, 0, 250) . '!';
+    }
+    return $sentence;
+}
 
 print "Your Drupal module is in $module_directory. Have a nice day!\n";
