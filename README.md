@@ -81,6 +81,10 @@ maxfieldtest
 
 Installing the module in your Drupal instance will create a new content type and attach 20 test fields to it. A CSV file containing faked up data (by default, from randomized words drawn from the LICENSE file) is also generated so you can populate some nodes using the Migrate framework.
 
+# To do
+
+* Generate the YAML config files required to use the Migrate frameword to ingest the CSV data.
+
 # Author
 
 Mark Jordan (https://github.com/mjordan)
