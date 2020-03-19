@@ -333,13 +333,11 @@ for ($i = 1; $i <= $num_fields; $i++) {
     $csv_header[] = $field_machine_name;
 }
 $csv_data[] = $csv_header;
-// Add 2 to account for the row_id and title fields.
-$num_csv_fields = $num_fields + 2;
 for ($r = 1; $r <= $num_csv_records; $r++) {
     $record = [];
-    for ($f = 1; $f <= $num_csv_fields; $f++) {
-        $record[] =  $r;
-        $record[] =  ucfirst($module_machine_name) . ' sample node ' . $r;
+    $record[] =  $r;
+    $record[] =  ucfirst($module_machine_name) . ' sample node ' . $r;
+    for ($f = 1; $f <= $num_fields; $f++) {
         $csv_value = get_random_sentence($words);
         $record[] =  $csv_value;
     }
@@ -434,6 +432,7 @@ function get_random_sentence($words) {
     }
     return $sentence;
 }
+
 
 /**
  * Great the user then exit.
