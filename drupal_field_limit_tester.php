@@ -162,8 +162,7 @@ FORMDISPLAY1;
 
 $node_form_display_yml .= "\n";
 for ($i = 1; $i <= $num_fields; $i++) {
-    $field_suffix = str_pad($i, 5, "0", STR_PAD_LEFT);
-    $field_machine_name = 'field_maxtest' . $field_suffix;
+    $field_machine_name = get_node_field_name($i, $field_suffix);
     $node_form_display_yml .= "     - field.field.node.$module_machine_name.$field_machine_name\n";
 }
 
@@ -189,8 +188,7 @@ content:
 FORMDISPLAY2;
 
 for ($i = 1; $i <= $num_fields; $i++) {
-    $field_suffix = str_pad($i, 5, "0", STR_PAD_LEFT);
-    $field_machine_name = 'field_maxtest' . $field_suffix;
+    $field_machine_name = get_node_field_name($i, $field_suffix);
 
 $node_form_display_yml .= "\n" . <<<FORMDISPLAY3
   $field_machine_name:
@@ -279,8 +277,7 @@ dependencies:
 VIEWDISPLAY;
 $node_view_display_yml .= "\n";
 for ($i = 1; $i <= $num_fields; $i++) {
-    $field_suffix = str_pad($i, 5, "0", STR_PAD_LEFT);
-    $field_machine_name = 'field_maxtest' . $field_suffix;
+    $field_machine_name = get_node_field_name($i, $field_suffix);
     $node_view_display_yml .= "     - field.field.node.$module_machine_name.$field_machine_name\n";
 }
 
@@ -298,8 +295,7 @@ content:
 VIEWDISPLAY2;
 
 for ($i = 1; $i <= $num_fields; $i++) {
-    $field_suffix = str_pad($i, 5, "0", STR_PAD_LEFT);
-    $field_machine_name = 'field_maxtest' . $field_suffix;
+    $field_machine_name = get_node_field_name($i, $field_suffix);
 
 $node_view_display_yml .= "\n" . <<<VIEWDISPLAY3
   $field_machine_name:
@@ -328,8 +324,7 @@ $csv_data = [];
 $csv_header = ['row_id', 'title'];
 
 for ($i = 1; $i <= $num_fields; $i++) {
-    $field_suffix = str_pad($i, 5, "0", STR_PAD_LEFT);
-    $field_machine_name = 'field_maxtest' . $field_suffix;
+    $field_machine_name = get_node_field_name($i, $field_suffix);
     $csv_header[] = $field_machine_name;
 }
 $csv_data[] = $csv_header;
@@ -380,8 +375,7 @@ MIGRATIONCONFIG1;
 
 $migration_config_yml .= "\n";
 for ($i = 1; $i <= $num_fields; $i++) {
-    $field_suffix = str_pad($i, 5, "0", STR_PAD_LEFT);
-    $field_machine_name = 'field_maxtest' . $field_suffix;
+    $field_machine_name = get_node_field_name($i, $field_suffix);
     $migration_config_yml .= '  ' . $field_machine_name . ': ' . $field_machine_name . "\n";
 }
 
@@ -437,6 +431,11 @@ function get_random_sentence($words) {
     return $sentence;
 }
 
+function get_node_field_name($field_sequence, $field_suffix) {
+    $field_suffix = str_pad($field_sequence, 5, "0", STR_PAD_LEFT);
+    $field_machine_name = 'field_maxtest' . $field_suffix;
+    return $field_machine_name;
+}
 
 /**
  * Greet the user then exit.
