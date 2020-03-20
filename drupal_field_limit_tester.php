@@ -2,7 +2,9 @@
 
 /**
  * Script to generate a Drupal 8 module that creates a content type and
- * as many fields as you want.
+ * a specified number of fields on that content type. Also generates a CSV
+ * file thta can be used to populate nodes. Useful for scalability
+ * testing.
  *
  * This script comes with absolutely no warranty. By reading this
  * sentence you give up all rights to blame its author if your Drupal
@@ -21,7 +23,6 @@ $num_fields = 20;
 $path_to_word_file = './LICENSE';
 $num_csv_records = 10;
 
-
 /**
  * You don't need to touch anything below this line. But you can if you want.
  */
@@ -29,7 +30,7 @@ $num_csv_records = 10;
 $module_machine_name = basename($module_directory);
 
 /**
- * .info.yml file.
+ * Generate the .info.yml file.
  */
 $info_yaml = <<< INFO
 name: "$module_name"
@@ -88,7 +89,7 @@ for ($i = 1; $i <= $num_fields; $i++) {
 
 /**
  * Generate the field definition and storage .yml files,
- * one each per field.
+ * one of each per field.
  */
 $field_definition_yml = <<<FIELD
 langcode: en
@@ -317,7 +318,6 @@ $node_view_display_yml .= "\nhidden: { }\n";
         DIRECTORY_SEPARATOR . 'core.entity_view_display.node.' . $module_machine_name . '.default.yml';
     file_put_contents($node_view_display_file_path, $node_view_display_yml);
 
-
 /**
  * Generate the CSV file.
  */
@@ -350,7 +350,7 @@ foreach ($csv_data as $fields) {
 }
 
 /**
- * Generate a migration configuration files.
+ * Generate the migration configuration files.
  */
 $migration_config_yml = <<<MIGRATIONCONFIG1
 langcode: en
@@ -430,11 +430,15 @@ function get_random_sentence($words) {
     if (strlen($sentence) > 250) {
         $sentence = substr($sentence, 0, 250) . '!';
     }
+    // We don't want any sentences that are just a '.'.
+    if ($sentence == '.') {
+        $sentence = get_random_sentence($words);
+    }
     return $sentence;
 }
 
 
 /**
- * Great the user then exit.
+ * Greet the user then exit.
  */
 print "Your Drupal module is in $module_directory. Have a nice day!\n";
