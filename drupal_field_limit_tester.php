@@ -13,9 +13,10 @@
  * This script is in the public domain.
  */
 
-/**
- * You may want to adjust these variables.
- */
+/*******************************************
+ * You may want to adjust these variables. *
+ ******************************************/
+
 $module_directory = 'maxfieldtest';
 $module_name = 'Max Field Test';
 $module_description = 'A module that generates a content type and adds a bunch of fields.';
@@ -23,15 +24,16 @@ $num_fields = 20;
 $path_to_word_file = './LICENSE';
 $num_csv_records = 10;
 
-/**
- * You don't need to touch anything below this line. But you can if you want.
- */
+/******************************************************************************
+ * You don't need to touch anything below this line. But you can if you want. *
+ *****************************************************************************/
 
 $module_machine_name = basename($module_directory);
 
-/**
- * Generate the .info.yml file.
- */
+/********************************
+ * Generate the .info.yml file. *
+ *******************************/
+
 $info_yaml = <<< INFO
 name: "$module_name"
 description: "$module_description"
@@ -62,9 +64,10 @@ preview_mode: 1
 display_submitted: true
 CTYPE;
 
-/**
- * Create the module directory and write out the .info.yml file.
- */
+/*****************************************************************
+ * Create the module directory and write out the .info.yml file. *
+ ****************************************************************/
+
 if (file_exists($module_directory)) {
     exit("Sorry, the module directory $module_directory already exists\n");
 }
@@ -87,10 +90,8 @@ for ($i = 1; $i <= $num_fields; $i++) {
     $field_suffix = str_pad($i, 5, "0", STR_PAD_LEFT);
     $field_machine_name = 'field_maxtest' . $field_suffix;
 
-/**
- * Generate the field definition and storage .yml files,
- * one of each per field.
- */
+// Generate the field definition and storage .yml files,
+// one of each per field.
 $field_definition_yml = <<<FIELD
 langcode: en
 status: true
@@ -150,9 +151,10 @@ STORAGE;
     file_put_contents($field_storage_file_path, $field_storage_yml);
 }
 
-/**
- * Generate the form display .yml file.
- */
+/****************************************
+ * Generate the form display .yml file. *
+ ***************************************/
+
 $node_form_display_yml = <<<FORMDISPLAY1
 langcode: en
 status: true
@@ -162,7 +164,7 @@ FORMDISPLAY1;
 
 $node_form_display_yml .= "\n";
 for ($i = 1; $i <= $num_fields; $i++) {
-    $field_machine_name = get_node_field_name($i, $field_suffix);
+    $field_machine_name = get_node_field_name($i);
     $node_form_display_yml .= "     - field.field.node.$module_machine_name.$field_machine_name\n";
 }
 
@@ -188,7 +190,7 @@ content:
 FORMDISPLAY2;
 
 for ($i = 1; $i <= $num_fields; $i++) {
-    $field_machine_name = get_node_field_name($i, $field_suffix);
+    $field_machine_name = get_node_field_name($i);
 
 $node_form_display_yml .= "\n" . <<<FORMDISPLAY3
   $field_machine_name:
@@ -266,9 +268,11 @@ FORMDISPLAY4;
         DIRECTORY_SEPARATOR . 'core.entity_form_display.node.' . $module_machine_name . '.default.yml';
     file_put_contents($node_form_display_file_path, $node_form_display_yml);
 
-/**
- * Generate the view display config file.
- */
+
+/*******************************************************
+ * Generate the content type view display config file. *
+ ******************************************************/
+
 $node_view_display_yml = <<<VIEWDISPLAY
 langcode: en
 status: true
@@ -277,7 +281,7 @@ dependencies:
 VIEWDISPLAY;
 $node_view_display_yml .= "\n";
 for ($i = 1; $i <= $num_fields; $i++) {
-    $field_machine_name = get_node_field_name($i, $field_suffix);
+    $field_machine_name = get_node_field_name($i);
     $node_view_display_yml .= "     - field.field.node.$module_machine_name.$field_machine_name\n";
 }
 
@@ -295,7 +299,7 @@ content:
 VIEWDISPLAY2;
 
 for ($i = 1; $i <= $num_fields; $i++) {
-    $field_machine_name = get_node_field_name($i, $field_suffix);
+    $field_machine_name = get_node_field_name($i);
 
 $node_view_display_yml .= "\n" . <<<VIEWDISPLAY3
   $field_machine_name:
@@ -314,9 +318,10 @@ $node_view_display_yml .= "\nhidden: { }\n";
         DIRECTORY_SEPARATOR . 'core.entity_view_display.node.' . $module_machine_name . '.default.yml';
     file_put_contents($node_view_display_file_path, $node_view_display_yml);
 
-/**
- * Generate the CSV file.
- */
+/**************************
+ * Generate the CSV file. *
+ *************************/
+
 $word_file_contents = file_get_contents($path_to_word_file);
 $words = preg_split('/\s+/', $word_file_contents);
 $words = array_unique($words);
@@ -324,7 +329,7 @@ $csv_data = [];
 $csv_header = ['row_id', 'title'];
 
 for ($i = 1; $i <= $num_fields; $i++) {
-    $field_machine_name = get_node_field_name($i, $field_suffix);
+    $field_machine_name = get_node_field_name($i);
     $csv_header[] = $field_machine_name;
 }
 $csv_data[] = $csv_header;
@@ -344,9 +349,10 @@ foreach ($csv_data as $fields) {
     fputcsv($fp, $fields);
 }
 
-/**
- * Generate the migration configuration files.
- */
+/***********************************************
+ * Generate the migration configuration files. *
+ **********************************************/
+
 $migration_config_yml = <<<MIGRATIONCONFIG1
 langcode: en
 status: true
@@ -375,7 +381,7 @@ MIGRATIONCONFIG1;
 
 $migration_config_yml .= "\n";
 for ($i = 1; $i <= $num_fields; $i++) {
-    $field_machine_name = get_node_field_name($i, $field_suffix);
+    $field_machine_name = get_node_field_name($i);
     $migration_config_yml .= '  ' . $field_machine_name . ': ' . $field_machine_name . "\n";
 }
 
@@ -386,8 +392,8 @@ destination:
 migration_dependencies: null
 MIGRATIONCONFIG2;
 
-    $migration_config_file_path = $module_directory . 
-        DIRECTORY_SEPARATOR . $module_machine_name . '.migration_config.yml';
+    $migration_config_file_path = $install_files_directory . 
+        DIRECTORY_SEPARATOR . 'migrate_plus.migration.' . $module_machine_name . '.yml';
     file_put_contents($migration_config_file_path, $migration_config_yml);
 
 $migration_group_config_file_yml = <<<MIGRATIONGROUPCONFIG
@@ -409,8 +415,19 @@ MIGRATIONGROUPCONFIG;
         DIRECTORY_SEPARATOR . 'migrate_plus.migration_group.' . $module_machine_name . '.yml';
     file_put_contents($migration_group_config_file_path, $migration_group_config_file_yml);
 
+
+/**************
+ * Functions. *
+ *************/
+
 /**
- * Functions.
+ * Generate a random string of words (a sentence) to use as data for a field.
+ *
+ * @param array $words
+ *    All words in the work file.
+ *
+ * @return string
+ *    A sentence.
  */
 function get_random_sentence($words) {
     foreach ($words as &$word) {
@@ -431,13 +448,23 @@ function get_random_sentence($words) {
     return $sentence;
 }
 
-function get_node_field_name($field_sequence, $field_suffix) {
+/**
+ *  Create the machine name of a field.
+ *
+ * @param int $field_sequence
+ *    The sequence of the field.
+ *
+ * @return string
+ *    The field's machine name.
+ */
+function get_node_field_name($field_sequence) {
     $field_suffix = str_pad($field_sequence, 5, "0", STR_PAD_LEFT);
     $field_machine_name = 'field_maxtest' . $field_suffix;
     return $field_machine_name;
 }
 
-/**
- * Greet the user then exit.
- */
+
+/*****************************
+ * Greet the user then exit. *
+ ****************************/
 print "Your Drupal module is in $module_directory. Have a nice day!\n";
