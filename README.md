@@ -29,7 +29,7 @@ Then, run the script:
 With the above variables, the following Drupal module will be generated:
 
 ```
-maxfieldtest
+maxfieldtest/
 ├── config
 │   └── install
 │       ├── core.entity_form_display.node.maxfieldtest.default.yml
@@ -75,9 +75,9 @@ maxfieldtest
 │       ├── field.storage.node.field_maxtest00019.yml
 │       ├── field.storage.node.field_maxtest00020.yml
 │       ├── migrate_plus.migration_group.maxfieldtest.yml
+│       ├── migrate_plus.migration.maxfieldtest.yml
 │       └── node.type.maxfieldtest.yml
 ├── maxfieldtest.csv
-├── maxfieldtest.migration_config.yml
 └── maxfieldtest.info.yml
 ```
 
