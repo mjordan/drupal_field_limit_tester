@@ -77,6 +77,17 @@ maxfieldtest/
 │       ├── migrate_plus.migration_group.maxfieldtest.yml
 │       ├── migrate_plus.migration.maxfieldtest.yml
 │       └── node.type.maxfieldtest.yml
+├── json
+│   ├── 10.json
+│   ├── 1.json
+│   ├── 2.json
+│   ├── 3.json
+│   ├── 4.json
+│   ├── 5.json
+│   ├── 6.json
+│   ├── 7.json
+│   ├── 8.json
+│   └── 9.json
 ├── maxfieldtest.csv
 └── maxfieldtest.info.yml
 ```
@@ -84,6 +95,8 @@ maxfieldtest/
 Installing the module in your Drupal instance will create a new content type and attach 20 test fields to it.
 
 ## Importing sample content
+
+### CSV content
 
 Within the module directory, you will find a CSV file containing sample field data (with the number of records specified in the `$num_csv_records` variable at the top of the script), and within the `config/install` directory, the configuration files for an accompanying migration. By default, the sample content is randomized words from the module's LICENSE file but you can use any text file you want. To use this migration, you will need to have the [Migrate Tools](https://www.drupal.org/project/migrate_tools) and [Migrate Source CSV](https://www.drupal.org/project/migrate_source_csv) modules installed.
 
@@ -94,6 +107,14 @@ To import the sample content:
 1. Click on "Execute".
 
 When you uninstall your module, all of the content type and migration configuration is removed autmoatically, but the nodes created by the migration are not. You will need to delete those yourself.
+
+### JSON content
+
+This script also writes out a set of JSON files (same number as records in the CSV file), using the structure expected by Drupal's REST interface, in case you want to `POST` them to your Drupal using something like:
+
+```
+curl -i -X POST -u someuser:itspassword -H"Content-type: application/json" --data "@path/tomaxfieldtest/json/10.json" "http://localhost/node?_format=json"
+```
 
 ## Author
 

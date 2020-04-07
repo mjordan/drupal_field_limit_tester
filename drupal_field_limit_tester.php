@@ -349,6 +349,26 @@ foreach ($csv_data as $fields) {
     fputcsv($fp, $fields);
 }
 
+/**************************
+ * Generate the JSON files. *
+ *************************/
+$json_files_directory = $module_directory . 
+    DIRECTORY_SEPARATOR . 'json';
+mkdir($json_files_directory);
+ 
+// Create $num_csv_records JSON files, one per future node.
+for ($j = 1; $j <= $num_csv_records; $j++) {
+    $node = [];
+    $node['type'][] = ['target_id' => $module_machine_name, 'target_type' => 'node_type'];
+    $node['title'][] = ['value' => get_random_sentence($words)];;
+    for ($jfn = 1; $jfn <= $num_fields; $jfn++) {
+        $field_machine_name = get_node_field_name($jfn);
+        $node[$field_machine_name][] = ['value' => get_random_sentence($words)];
+    }    
+    $json_file_path = $json_files_directory . DIRECTORY_SEPARATOR . $j . '.json';
+    file_put_contents($json_file_path, json_encode($node));
+}
+
 /***********************************************
  * Generate the migration configuration files. *
  **********************************************/
@@ -458,6 +478,21 @@ function get_random_sentence($words) {
  *    The field's machine name.
  */
 function get_node_field_name($field_sequence) {
+    $field_suffix = str_pad($field_sequence, 5, "0", STR_PAD_LEFT);
+    $field_machine_name = 'field_maxtest' . $field_suffix;
+    return $field_machine_name;
+}
+
+/**
+ *  Create the machine name of a field.
+ *
+ * @param int $field_sequence
+ *    The sequence of the field.
+ *
+ * @return string
+ *    The field's machine name.
+ */
+function write_json_file($field_sequence) {
     $field_suffix = str_pad($field_sequence, 5, "0", STR_PAD_LEFT);
     $field_machine_name = 'field_maxtest' . $field_suffix;
     return $field_machine_name;
