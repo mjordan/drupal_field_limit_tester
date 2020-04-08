@@ -113,7 +113,7 @@ When you uninstall your module, all of the content type and migration configurat
 This script also writes out a set of JSON files (same number as records in the CSV file), using the structure expected by Drupal's REST interface, in case you want to `POST` them to your Drupal using something like:
 
 ```
-curl -i -X POST -u someuser:itspassword -H"Content-type: application/json" --data "@path/tomaxfieldtest/json/10.json" "http://localhost/node?_format=json"
+curl -i -X POST -u someuser:itspassword -H"Content-type: application/json" --data "@path/to/maxfieldtest/json/10.json" "http://localhost/node?_format=json"
 ```
 
 Or `PATCH` them:
