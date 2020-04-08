@@ -116,6 +116,12 @@ This script also writes out a set of JSON files (same number as records in the C
 curl -i -X POST -u someuser:itspassword -H"Content-type: application/json" --data "@path/tomaxfieldtest/json/10.json" "http://localhost/node?_format=json"
 ```
 
+Or `PATCH` them:
+
+```
+curl -i -X PATCH -u someuser:itspassword -H"Content-type: application/json" -d '{ "type": [{"target_id": "maxfieldtest"}], "field_maxtest00001": [{"value":"Foo foo faroo"}]}' "http://localhost/node/100?_format=json"
+```
+
 ## Author
 
 Mark Jordan (https://github.com/mjordan)
