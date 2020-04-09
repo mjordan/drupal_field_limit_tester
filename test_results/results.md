@@ -33,20 +33,20 @@ To time the tasks performed using Chrome, I used Chrome's "Performance" tool, av
 
 ### Overall:
 
-!['Chart showing all test results'](test_results/chart-all-results.png)
+!['Chart showing all test results'](chart-all-results.png)
 
 
 ### Node add and edit forms
 
 Biggest impact of increasing number of fields on a content type is the time it takes for the node add end edit forms to finish rendering:
 
-!['Chart showing test results for REST requests'](test_results/chart-forms.png)
+!['Chart showing test results for REST requests'](chart-forms.png)
 
 User experience diminshes as the number of fields increases.
 
 The most likely cause of these long rendering times is the JavaScript used by the node add and edit forms. Chrome's performance tool helpfully breaks down the time to render a page into loading, scripting, rendering, painting, system, and idle slices. By far, the largest slice of activity when viewing the node add and edit forms is scripting, followed by rendering. Here is a representative example visualization provided by the tool:
 
-!['Pie chart showing scripting and rendering time'](test_results/node_edit_form_summary.png)
+!['Pie chart showing scripting and rendering time'](node_edit_form_summary.png)
 
 During very long rendering of forms, I observed that the drag and drop UI provided by Drupal to order multiple field values did not render but instead showed the native HTML "row widget" weight assignment elements. I speculate that this JavaScript is contributing heavily to the very long scripting and rendering times shown in the pie chart above.
 
@@ -57,7 +57,7 @@ During very long rendering of forms, I observed that the drag and drop UI provid
 
 Number of fields didn't have an appreciable impact on any of the tested REST requests.
 
-!['Chart showing all test results'](test_results/chart-rest.png)
+!['Chart showing all test results'](chart-rest.png)
 
 One anomoly (`GET` with no cache, at 400 fields), but not a trend.
 
