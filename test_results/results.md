@@ -48,7 +48,16 @@ The most likely cause of these long rendering times is the JavaScript used by th
 
 !['Pie chart showing scripting and rendering time'](node_edit_form_summary.png)
 
-During very long rendering of forms, I observed that the drag and drop UI provided by Drupal to order multiple field values did not render but instead showed the native HTML "row widget" weight assignment elements. I speculate that this JavaScript is contributing heavily to the very long scripting and rendering times shown in the pie chart above.
+During very long rendering of forms, I observed that the drag and drop UI provided by Drupal to order multiple field values:
+
+!['Screenshot of multivalued field with drag and drop'](node_edit_form_drag_and_drop.png)
+
+did not render but instead showed the native HTML "row widget" weight assignment elements:
+
+!['Screenshot of multivalued field with row widgets'](node_edit_form_with_row_widgets.png.png)
+
+
+I speculate that this JavaScript is contributing heavily to the very long scripting and rendering times shown in the pie chart above.
 
 
 
