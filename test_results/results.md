@@ -2,13 +2,13 @@
 
 By performing the tests described below, I hoped to observe relationsips between the number of fields on a Drupal content type and the time-to-completion of a set of tasks (such as rendering node conent, add/edit forms, REST requests, etc.) on nodes of that content type. My motiviation for doing this was to 1) to document practical limits on the number of fields on a content type, and 2) to provide data that would generate additional areas of investigation leading to workarounds or strategies for managing Islandora content types that have large numbers of metadata fields.
 
-## Test results
+## Methodology
 
 ### Environment
 
 All tests were done on an [Islandora Playbook](https://github.com/Islandora-Devops/islandora-playbook) virutal machine, using its master branch at commit 47e829a2b222ebcb5c3f6e537c79d107912b40f9 (March 29, 2020, a couple of weekd prior to the release of Islandora 8 1.1.0). This VM used the default Islandora Playbook settings (1 CPU, 4GB of RAM, Ubuntu 16.04, MySQL as the backend database). The host machine was a Thinkpad (i5-8350U CPU @ 1.70GHz × 8 with 16GB of RAM) running Ubuntu 18.04.
 
-### Methodology
+### Data collection
 
 To generate the data, I created a Drupal module using the `drupal_field_limit_tester.php` script with a `$num_csv_records` value of 1 (to generate one sample node). I then enabled the module and ran the migration. Using the resulting node, I performed the following tasks:
 
@@ -26,7 +26,7 @@ To generate the data, I created a Drupal module using the `drupal_field_limit_te
 
 I chose to migrate only a single node as test data because I wanted to reduce variables that may affect performance to as few as possible. I also speculated that retrieving the same content, using the same caching, in both a graphical web browser and curl would allow me to establish a baseline time that Drupal takes to assemble and deliver HTML markup and content, in order to expose the time it takes to render JavaScript and CSS.
 
-To time the tasks performed using Chrome, I used Chrome's "Performance" tool, available in the hamburger menu > More tools > Developer tools. To time the tasks performed using Chrome, I used the "Total" time produced in the performance tool's "summary" output. To time the tasks performed using curl, I ran the requests with the Linux `time` command, e.g., `time curl http://localhost:8000/node/50` and used the 'real' value from this ouput.
+To time the tasks performed using Chrome, I used Chrome's "Performance" tool, available in the hamburger menu > More tools > Developer tools. To time the tasks performed using Chrome, I used the "Total" time produced in the performance tool's "summary" output. To time the tasks performed using curl, I ran the requests with the Linux `time` command, e.g., `time curl http://localhost:8000/node/50` and used the "real" value from this ouput.
 
 I then rolled back the migration and uninstalled the module. I repeated this for nodes with with 50, 100, 150, 200, 250, 300, 350, 400, 450, and 500 fields.
 
@@ -62,7 +62,7 @@ Specifically, the drag and drop tools, which use JavaScript under the hood, did 
 
 Based on this behavior, it seems likely that this JavaScript is contributing heavily to the very long scripting and rendering times shown in the pie chart above. To confirm this, I dug deeper in Chrome's performance tool, which revealed that that the main JavaScript library loaded by the node edit form took approximately 30 seconds to execute of the 43 seconds required to render the edit form.
 
-To test this, I retrieved the popluated node edit form via curl. This version of the form is identical to the version served up to a graphical browser, but does not execute any JavaScript or layout rendering. The time required to simply download the populated node edit form vs. download and render it is shown here:
+To provide a control for the impact of executing JavaScript, I retrieved the popluated node edit form via curl, authenticated as the "admin" user. The HTML markup and node field content in this version of the form is identical to the that served up to a graphical browser, but does not execute any JavaScript or layout rendering. The time required to simply download the populated node edit form vs. download and render it is shown here:
 
 !['Chart showing rendering of the GUI node edit form vs. markup and data only'](node_edit_form_gui_vs_curl.png)
 
@@ -74,7 +74,7 @@ Drupal's page caching for anonymous users is very effective, so it isn't surpris
 
 !['Node view test results'](node-view.png)
 
-This chart includes data on requesting the JSON representation of an node (red and green data in the chart above) for comparion to rendering the node data in a graphical browser. More commentary on that in the next section. 
+This chart includes data on requesting the full HTML representation of an node via curl, to provide a control for rendering the node data in a graphical browser. Based on this comparison, requests for uncached nodes takes substantially longer than requests for cached nodes, for both graphical and non-graphical clients. I expected Chrome to take longer to render cached node content (the red line in the chart) as the number of fields increased, but the data shows that is not the case.
 
 ### REST requests
 
