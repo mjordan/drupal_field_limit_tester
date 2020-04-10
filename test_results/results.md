@@ -34,7 +34,7 @@ I then rolled back the migration and uninstalled the module. I repeated this for
 
 ### Overall
 
-A chart plotting the number of fields along the X axis (100 to 500 in increments of 50) against the time required to complete the tasks along the Y axis (0 to 50) looks like this:
+A chart plotting the number of fields along the X axis (100 to 500 in increments of 50) against the time required to complete the tasks along the Y axis (0 to 50 seconds) looks like this:
 
 !['Chart showing all test results'](chart-all-results.png)
 
@@ -66,16 +66,15 @@ To test this, I retrieved the popluated node edit form via curl. This version of
 
 !['Chart showing rendering of the GUI node edit form vs. markup and data only'](node_edit_form_gui_vs_curl.png)
 
-I explain the gap at 400 fields below in the "Limitations" section.
+Despite a gap in data at 400 fields (which I explain below in the "Limitations" section), it appears that the number of fiels has little effect on how long Drupal requires to assemble and serve up the populated edit form, but that preparing the form for use within a graphical web browser takes a long time.
 
 ### Viewing node content
 
-Drupal's page caching for anonymous users is very effective, so it isn't surprising that the number of fields on a node did not increase the amount of time required to render or download the cached node content and markup. The time requiered to retrieve uncached node content and markup did increase with the number of fields on a node, using both Chrome and curl, but the increase was greater in Chrome:
+Drupal's page caching for anonymous users is very effective, so it isn't surprising that the number of fields on a node did not increase the amount of time required to render or download the cached node content and markup. The time requiered to retrieve uncached node content and markup did increase with the number of fields on a node, using both Chrome and curl, but the increase was greater in Chrome than using curl:
 
 !['Node view test results'](node-view.png)
 
-Overall, requesting the JSON representation of an node is faster than fetching a representation containing full HTML markup, which is not surprising.
-
+This chart includes data on requesting the JSON representation of an node (red and green data in the chart above) for comparion to rendering the node data in a graphical browser. More commentary on that in the next section. 
 
 ### REST requests
 
@@ -83,16 +82,19 @@ Number of fields didn't have an appreciable impact on any of the tested REST req
 
 !['Chart showing all test results'](chart-rest.png)
 
-Not surprisingly, requesting the JSON representation of an node (via `GET`) is faster than fetching a representation containing full HTML markup, especially requests for cached content, even for authenticated users. I noticed one anomoly (`GET` with no cache, at 400 fields), which I will explain below in the "Limitations" section. At 500 fields, adding nodes (via `POST`) started to take a bit longer than with fewer fields, but updating a single field via `PATCH` was consistently quick all the way up to 500 fields.
+As just stated, requesting the JSON representation of an node (via `GET`) is fairly regardless of the number of fields, especially requests for cached content, even for authenticated users. There is one anomoly (`GET` with no cache, at 400 fields), which I will explain below in the "Limitations" section. It isn't surprising that requesting the JSON via a REST request is faster than fetching a fully rendered version of the node, since the JSON representation contains no HTML markup.
+
+
+At 500 fields, adding nodes (via `POST`) started to take a bit longer than with fewer fields, but updating a single field via `PATCH` was consistently quick all the way up to 500 fields.
 
 ## Limitations
 
 This exploration of the practical number of fields you can attach to a Drupal content type provides some baseline data up to 500 fields. However, it has the following limitiations:
 
-* It only tested the time it takes using a graphical web browser to render node add and edit forms. Chrome's developer tools do not provide a way (as far as I can tell) of timing form submit operations.
-* All fields attached to nodes for testing purposes are simple text fields (i.e., it doesn't test for performance implications of other field types such as taxonomy fields).
-* While it does control for server-side caching (in Drupal at least), it does not account for caching done by Chrome.
-* The test data contains a gap at 400 fields. During collection of the data at the 400 field point, Drupal (or Chrome) hung while retrieving the populated node edit form. I decided to leave this gap instead of restart the entire 400-field test run in order to be consistent with the other data collection runs. However, it is unlikely the lack of one data point invalidates the trends revealed by the rest of the data.
+* It only tested the time it takes using a graphical web browser to *render* node add and edit forms. Chrome's developer tools do not provide a way (as far as I can tell) of timing form submit operations.
+* All fields attached to nodes for testing purposes are simple text fields (i.e., this study doesn't test for performance implications of other field types such as taxonomy fields).
+* While this study does control for server-side caching (in Drupal at least), it does not account for caching done by Chrome.
+* The test data contains a gap at 400 fields. During collection of the data at the 400 field point, Drupal (or Chrome) hung while retrieving the populated node edit form. I decided to leave this gap in the data instead of restart the entire 400-field test run in order to be consistent with the other data collection runs. However, it is unlikely the lack of one data point invalidates the trends revealed by the rest of the data.
 
 ## Conclusions
 
