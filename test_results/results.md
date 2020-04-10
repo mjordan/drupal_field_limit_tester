@@ -52,15 +52,15 @@ The most likely cause of these long rendering times is the JavaScript used by th
 
 !['Pie chart showing scripting and rendering time'](node_edit_form_summary.png)
 
-During very long rendering of forms, I observed behavior in the drag-and-drop UI provided by Drupal to order multiple field values:
+During very long rendering of forms, I observed some unusual behavior in the drag-and-drop UI elements provided by Drupal to order multiple field values:
 
 !['Screenshot of multivalued field with drag and drop'](node_edit_form_drag_and_drop.png)
 
-Specifically, the drag-and-drop UI elements, which use JavaScript under the hood, did not render quickly. Instead, Drupal reverted to the native HTML "row widget" weight assignment elements until much later in the page rendering processnear the end of the visible page rendering:
+Specifically, the drag-and-drop UI elements, which use JavaScript under the hood, did not render as expected. Instead, Drupal temporarily reverted to the native HTML "row widget" weight assignment elements until much later in the page rendering process near the end of the visible page rendering:
 
 !['Screenshot of multivalued field with row widgets'](node_edit_form_with_row_widgets.png)
 
-Based on this behavior, it seemed likely that this JavaScript contributed heavily to the very long scripting and rendering times shown in the pie chart above. To confirm this, I dug deeper in Chrome's performance tool, which revealed that that the main JavaScript library loaded by the node edit form took approximately 30 seconds to execute of the 43 seconds required to render the edit form.
+Based on this behavior, it seemed likely that the JavaScript used to render the drag-and-drop UI elements was implicated in the very long scripting and rendering times shown in the pie chart above. To confirm this, I dug deeper in Chrome's performance tool, which revealed that that the main JavaScript library loaded by the node edit form took approximately 30 seconds to execute of the 43 seconds required to render the edit form.
 
 To gather additional data to narrow down the impact of executing JavaScript when rendering the node edit form, I retrieved the popluated node edit form via curl, authenticated as the Drupal "admin" user. The HTML markup and node field content in this version of the form is identical to the that deliverd to a graphical browser. Since curl does not execute any JavaScript or layout rendering, it makes sense that the time required for curl to complete its request for the populated node edit form is much lower than the same request by a graphical browser:
 
