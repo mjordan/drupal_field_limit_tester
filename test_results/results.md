@@ -85,7 +85,7 @@ Number of fields didn't have an appreciable impact on any of the tested REST req
 Requesting the JSON representation of an node (via `GET`) is fairly fast regardless of the number of fields, especially requests for cached content, and even for authenticated users. There is one anomaly (`GET` with no cache, at 400 fields), which I will explain below in the "Limitations" section. It isn't surprising that requesting the JSON via a REST request is faster than fetching a fully rendered version of the node, since the JSON representation contains no HTML markup.
 
 
-At 500 fields, adding nodes (via `POST`) started to take a bit longer than with fewer fields, but updating a single field via `PATCH` was consistently quick all the way up to 500 fields.
+At 500 fields, retrieving a node's JSON representation (via `GET`) and adding nodes (via `POST`) started to take a bit longer than with fewer fields, but updating a single field via `PATCH` was consistently quick all the way up to 500 fields.
 
 ## Limitations
 
@@ -94,7 +94,7 @@ This exploration of the practical number of fields you can attach to a Drupal co
 * It only tested the time it takes using a graphical web browser to *render* node add and edit forms. Chrome's developer tools do not provide a way (as far as I can tell) of timing form submit operations.
 * All fields attached to nodes for testing purposes are simple text fields (i.e., this study doesn't test for performance implications of other field types such as taxonomy fields).
 * While this study does control for server-side caching (in Drupal at least), it does not account for caching done by Chrome.
-* The test data contains a gap, and an anomaly, at 400 fields. During collection of the data at the 400 field point, Drupal (or Chrome) hung while retrieving the populated node edit form. I decided to leave this gap in the data instead of restart the entire 400-field test run in order to be consistent with the other data collection runs. However, it is unlikely the lack of one data point invalidates the trends revealed by the rest of the data. Likewise, at 400 fields, we see an out-of-trend spike in the time required to complete the the `GET` REST request. I assume that these two exceptions were caused by same underlying problem with Drupal.
+* The test data contains a gap, and an anomaly, at 400 fields. During collection of the data at the 400 field point, Drupal (or Chrome) hung while retrieving the populated node edit form. Likewise, at 400 fields, we see an out-of-trend spike in the time required to complete the the `GET` REST request. I assume that these two exceptions were caused by same underlying problem with Drupal. I decided to leave this gap in the data instead of restart the entire 400-field test run in order to be consistent with the other data collection runs. It is unlikely the lack of one data point invalidates the trends revealed by the rest of the data.
 
 ## Conclusions
 
