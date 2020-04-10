@@ -6,39 +6,39 @@ By performing the tests described below, I hoped to observe relationsips between
 
 ### Environment
 
-All tests were done on an [Islandora Playbook](https://github.com/Islandora-Devops/islandora-playbook) virutal machine, using its master branch at commit 47e829a2b222ebcb5c3f6e537c79d107912b40f9 (March 29, 2020, a couple of weekd prior to the release of Islandora 8 1.1.0). This VM used the default Islandora Playbook settings (1 CPU, 4GB of RAM, Ubuntu 16.04, MySQL as the backend database). The host machine was a Thinkpad (i5-8350U CPU @ 1.70GHz × 8 with 16GB of RAM) running Ubuntu 18.04.
+All tests were done on an [Islandora Playbook](https://github.com/Islandora-Devops/islandora-playbook) virutal machine, using its master branch at commit 47e829a2b222ebcb5c3f6e537c79d107912b40f9 (March 29, 2020, a few of weeks prior to the release of Islandora 8 1.1.0). This VM used the default Islandora Playbook settings (1 CPU, 4GB of RAM, Ubuntu 16.04, MySQL as the backend database). The host machine was a Thinkpad i5-8350U CPU @ 1.70GHz × 8 with 16GB of RAM running Ubuntu 18.04.
 
 ### Data collection
 
 To generate the data, I created a Drupal module using the `drupal_field_limit_tester.php` script with a `$num_csv_records` value of 1 (to generate one sample node). After enabling the module, I performed the following tasks:
 
 * Migrated 1 node from CSV
-* Viewed (using the Chrome browser) this node as anonymous, with an empty Drupal cache
-* Viewed (using the Chrome browser) this node as anonymous with a populated Drupal cache
-   * Fetched this same content using `curl` with both empty and populated Drupal cache
-* Viewed (using the Chrome browser) the node add form for my content type, as the "admin" user
-* Viewed (using the Chrome browser) the node edit form for my content type (populated with node content), as the "admin" user
-   * Fetched this same content using `curl`
-* Using `curl`, issued a `GET` request to the sample node's JSON endpoint with an empty Drupal cache, authenticated as the "admin" user
-* Using `curl`, issued a `GET` request to the sample node's JSON endpoint with a populated Drupal cache, authenticated as the "admin" user
-* Using `curl`, issued a `POST` request to create a node
-* Using `curl`, issued a `PATCH` request to update a single field on a node
+* Viewed (using Chrome) this node as anonymous, with an empty Drupal cache
+* Viewed (using Chrome) this node as anonymous with a populated Drupal cache
+   * Fetched this same content using curl with both empty and populated Drupal cache
+* Viewed (using Chrome) the node add form for my content type, as the "admin" user
+* Viewed (using Chrome) the node edit form for my content type (populated with node content), as the "admin" user
+   * Fetched this same content using curl
+* Using curl, issued a `GET` request to the sample node's JSON endpoint with an empty Drupal cache, authenticated as the "admin" user
+* Using curl, issued a `GET` request to the sample node's JSON endpoint with a populated Drupal cache, authenticated as the "admin" user
+* Using curl, issued a `POST` request to create a node
+* Using curl, issued a `PATCH` request to update a single field on a node
 
-I created only a single node as test data in order to reduce variables that may affect performance. I speculated that retrieving the same content, using the same caching, in both a graphical web browser and curl would allow me to establish a baseline time-to-completion that Drupal requires to assemble and deliver HTML markup and content, in order to compare that baseline with the time it takes a graphical web browser to render JavaScript and CSS.
+I created only a single node as test data in order to eliminate any variability introduced by the number of nodes. I speculated that retrieving the same content, using the same caching, in both a graphical web browser and curl would allow me to establish a baseline time-to-completion that Drupal requires to assemble and deliver HTML markup and content, in order to compare that baseline with the time it takes for Chrome to render JavaScript and CSS.
 
-To time the tasks performed using a graphical browser, I used Chrome's "Performance" tool, available in the hamburger menu > More tools > Developer tools. To time the tasks performed using Chrome, recording the "Total" time produced in the performance tool's "Summary" output. To time the tasks performed using curl, I ran the requests with the Linux `time` command, e.g., `time curl http://localhost:8000/node/50` and used the "real" value from this ouput.
+To time the tasks performed using Chrome, I used its "Performance" tool, available in the hamburger menu > More tools > Developer tools. The data I recorded was the "Total" time listed in the tool's "Summary" output. To time the tasks performed using curl, I ran the requests with the Linux `time` command, e.g., `time curl http://localhost:8000/node/50` and used the "real" value from this ouput.
 
-I then rolled back the migration and uninstalled the module, repeating the entire set of tasks for nodes with with 50, 100, 150, 200, 250, 300, 350, 400, 450, and 500 fields.
+I then rolled back the migration and uninstalled the module, repeating the entire set of tasks for nodes with with 100, 150, 200, 250, 300, 350, 400, 450, and 500 fields.
 
 ## Results
 
 ### Overall
 
-A chart plotting the number of fields along the X axis (100 to 500 in increments of 50) against the time required to complete the tasks along the Y axis (0 to 50 seconds) looks like this:
+The data collected from these tasks is available in [this CSV file](results.csv). A chart plotting the number of fields along the X axis (100 to 500 in increments of 50) against the time required to complete the tasks along the Y axis (0 to 50 seconds) looks like this:
 
 !['Chart showing all test results'](chart-all-results.png)
 
-Below, I will break out some of the specific results. The data the charts are based on is available in [this CSV file](results.csv).
+Below, I will break out some of the specific results.
 
 ### Rendering the node add and edit forms
 
@@ -94,11 +94,11 @@ This exploration of the practical number of fields you can attach to a Drupal co
 * It only tested the time it takes using a graphical web browser to *render* node add and edit forms. Chrome's developer tools do not provide a way (as far as I can tell) of timing form submit operations.
 * All fields attached to nodes for testing purposes are simple text fields (i.e., this study doesn't test for performance implications of other field types such as taxonomy fields).
 * While this study does control for server-side caching (in Drupal at least), it does not account for caching done by Chrome.
-* The test data contains a gap, and an anomaly, at 400 fields. During collection of the data at the 400 field point, Drupal (or Chrome) hung while retrieving the populated node edit form. Likewise, at 400 fields, we see an out-of-trend spike in the time required to complete the the `GET` REST request. I assume that these two exceptions were caused by same underlying problem with Drupal. I decided to leave this gap in the data instead of restart the entire 400-field test run in order to be consistent with the other data collection runs. It is unlikely the lack of one data point invalidates the trends revealed by the rest of the data.
+* The test data contains a gap at 400 fields. During collection of the data at the 400 field point, Drupal hung while I was using curl to retrieve the populated node edit form. Likewise, at 400 fields, we see an anomalous spike in the time required to complete the REST `GET` request. I assume that these two exceptions were caused by same underlying problem with Drupal. I decided to leave this gap in the data instead of restarting the entire 400-field test run in order to be consistent with the other data collection runs. It is unlikely the lack of one data point invalidates the trends revealed by the rest of the data.
 
 ## Conclusions
 
-Based on the data presented here, the largest impact of large numbers of fields attached to a node is the user experience for content editors: the more fields, the longer it takes to render (and therefore use) node add and edit forms. There may be ways to mitigate this, for example by breaking up add/edit forms into multiple smaller forms using something like the [Forms Steps](https://www.drupal.org/project/forms_steps) contrib module.
+Based on the data presented here, the largest impact of large numbers of fields attached to a node is the UX for content editors: the more fields, the longer it takes to render (and therefore use) node add and edit forms. There may be ways to mitigate this, for example by breaking up add/edit forms into multiple smaller forms using something like the [Forms Steps](https://www.drupal.org/project/forms_steps) contrib module.
 
-Lage numbers of fields did not have a substantial impact on the time required to view a node (at least cached versions of nodes), or on REST operations, including create (`POST`) and update (`PATCH`) requests. The efficiency of REST requests suggests that decoupled Drupal clients may be able to replace the HTML add/edit forms in some applications, provided the user experience of those clients doesn't also suffer when dealing with nodes that contain very large numbers of fields.
+Lage numbers of fields did not have a substantial impact on the time required to view a node (at least cached versions of nodes), or on REST operations, including create (`POST`) and update (`PATCH`) requests. The efficiency of REST requests suggests that decoupled Drupal clients may be able to replace the HTML add/edit forms in some applications, provided the UX of those clients doesn't also suffer when dealing with nodes that contain very large numbers of fields.
 
