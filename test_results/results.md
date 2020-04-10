@@ -26,7 +26,7 @@ The tasks that I timed were:
 
 To time the tasks performed using Chrome, I used Chrome's "Performance" tool, available in the hamburger menu > More tools > Developer tools. To time the tasks performed using Chrome, I used the "Total" time produced in the performance tool's "summary" output. To time the tasks performed using curl, I ran the requests with the Linux `time` command, e.g., `time curl http://localhost:8000/node/50` and used the 'real' value from this ouput.
 
-
+I chose to migrate only a single node because I wanted to reduce variables that may affect performance to as few as possible. I also speculated that retrieving the same content, using the same caching, in both a graphical web browser and curl would allow me to establish a baseline time that Drupal takes to assemble and deliver HTML markup and content, in order to expose the time it takes to render JavaScript and CSS.
 
 
 ## Results
@@ -54,12 +54,23 @@ During very long rendering of forms, I observed that the drag and drop UI provid
 
 did not render but instead showed the native HTML "row widget" weight assignment elements:
 
-!['Screenshot of multivalued field with row widgets'](node_edit_form_with_row_widgets.png.png)
+!['Screenshot of multivalued field with row widgets'](node_edit_form_with_row_widgets.png)
 
 
-I speculate that this JavaScript is contributing heavily to the very long scripting and rendering times shown in the pie chart above.
+Based on this behavior, it seems likel that this JavaScript is contributing heavily to the very long scripting and rendering times shown in the pie chart above.
+
+### Viewing node content
+
+Since Drupal's page caching for anonymous users is very effective, so it isn't surprising that the number of fields on a node did not increase the amount of time required to render or download the cached node content and markup. The time requiered to retrieve uncached node content and markup did increase with the number of fields on a node, using both Chrome and curl, but the increase was greater in Chrome:
+
+!['Node view test results'](node-view.png)
+
+Retrieving the JSON representation of a node followed a similar pattern, althought I only tested for authenticated requests here, not anonymous, under the assumption that in practice most REST operations would be authenticated:
 
 
+!['Node JSON test results'](node-json.png)
+
+Overall, requesting the JSON representation of an node is faster than fetching a representation containing full HTML markup, which is not surprising.
 
 
 ### REST requests
