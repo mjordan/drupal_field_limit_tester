@@ -85,7 +85,7 @@ Number of fields didn't have an appreciable impact on any of the tested REST req
 Requesting the JSON representation of an node (via `GET`) is fairly fast regardless of the number of fields, especially requests for cached content, and even for authenticated users. There is one anomaly (`GET` with no cache, at 400 fields), which I will explain below in the "Limitations" section. It isn't surprising that requesting the JSON via a REST request is faster than fetching a fully rendered version of the node, since the JSON representation contains no HTML markup.
 
 
-At 500 fields, retrieving a node's JSON representation (via `GET`) and adding nodes (via `POST`) started to take a bit longer than with fewer fields, but updating a single field via `PATCH` was consistently quick all the way up to 500 fields.
+At 500 fields, retrieving a node's uncached JSON representation (via `GET`) and adding nodes (via `POST`) started to take a bit longer than with fewer fields, but updating a single field via `PATCH` was consistently quick all the way up to 500 fields.
 
 ## Limitations
 
