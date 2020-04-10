@@ -34,13 +34,13 @@ I then rolled back the migration and uninstalled the module. I repeated this for
 
 ### Overall
 
-All of my results, which are available in this CSV file, plotting number of fields along the X axis (100 to 500 in increments of 50) against the time required to complete the tasks along the Y axis (0 to 50) looks like this.
+A chart plotting the number of fields along the X axis (100 to 500 in increments of 50) against the time required to complete the tasks along the Y axis (0 to 50) looks like this:
 
 !['Chart showing all test results'](chart-all-results.png)
 
-Below, I will break out some of the specific results.
+Below, I will break out some of the specific results. The data the charts are based on is available in [this CSV file](results.csv).
 
-### Viewing node add and edit forms
+### Rendring the node add and edit forms
 
 The biggest impact of increasing number of fields on a content type is the time it takes for the node add end edit forms to finish rendering:
 
@@ -62,16 +62,17 @@ Specifically, the drag and drop tools, which use JavaScript under the hood, did 
 
 Based on this behavior, it seems likely that this JavaScript is contributing heavily to the very long scripting and rendering times shown in the pie chart above. To confirm this, I dug deeper in Chrome's performance tool, which revealed that that the main JavaScript library loaded by the node edit form took approximately 30 seconds to execute of the 43 seconds required to render the edit form.
 
+To test this, I retrieved the popluated node edit form via curl. This version of the form is identical to the version served up to a graphical browser, but does not execute any JavaScript or layout rendering. The time required to simply download the populated node edit form vs. download and render it is shown here:
+
+!['Chart showing rendering of the GUI node edit form vs. markup and data only'](node_edit_form_gui_vs_curl.png)
+
+I explain the gap at 400 fields below in the "Limitations" section.
+
 ### Viewing node content
 
 Drupal's page caching for anonymous users is very effective, so it isn't surprising that the number of fields on a node did not increase the amount of time required to render or download the cached node content and markup. The time requiered to retrieve uncached node content and markup did increase with the number of fields on a node, using both Chrome and curl, but the increase was greater in Chrome:
 
 !['Node view test results'](node-view.png)
-
-Retrieving the JSON representation of a node followed a similar pattern, althought I only tested for authenticated requests here, not anonymous, under the assumption that in practice most REST operations would be authenticated:
-
-
-!['Node JSON test results'](node-json.png)
 
 Overall, requesting the JSON representation of an node is faster than fetching a representation containing full HTML markup, which is not surprising.
 
@@ -83,4 +84,19 @@ Number of fields didn't have an appreciable impact on any of the tested REST req
 !['Chart showing all test results'](chart-rest.png)
 
 Not surprisingly, requesting the JSON representation of an node (via `GET`) is faster than fetching a representation containing full HTML markup, especially requests for cached content, even for authenticated users. I noticed one anomoly (`GET` with no cache, at 400 fields), which I will explain below in the "Limitations" section. At 500 fields, adding nodes (via `POST`) started to take a bit longer than with fewer fields, but updating a single field via `PATCH` was consistently quick all the way up to 500 fields.
+
+## Limitations
+
+This exploration of the practical number of fields you can attach to a Drupal content type provides some baseline data up to 500 fields. However, it has the following limitiations:
+
+* It only tested the time it takes using a graphical web browser to render node add and edit forms. Chrome's developer tools do not provide a way (as far as I can tell) of timing form submit operations.
+* All fields attached to nodes for testing purposes are simple text fields (i.e., it doesn't test for performance implications of other field types such as taxonomy fields).
+* While it does control for server-side caching (in Drupal at least), it does not account for caching done by Chrome.
+* The test data contains a gap at 400 fields. During collection of the data at the 400 field point, Drupal (or Chrome) hung while retrieving the populated node edit form. I decided to leave this gap instead of restart the entire 400-field test run in order to be consistent with the other data collection runs. However, it is unlikely the lack of one data point invalidates the trends revealed by the rest of the data.
+
+## Conclusions
+
+Based on the data presented here, the largest impact of large numbers of fields attached to a node is the user experience for content editors: the more fields, the longer it takes to render (and therefore use) node add and edit forms. There may be ways to mitigate this, for example by breaking up add/edit forms into multiple smaller forms using something like the [Forms Steps](https://www.drupal.org/project/forms_steps) contrib module.
+
+Lage numbers of fields did not have a substantial impact on the time required to view a node (at least cached versions of nodes), or on REST operations, including create (`POST`) and update (`PATCH`) requests. The efficiency of REST requests suggests that decoupled Drupal clients may be able to replace the HTML add/edit forms in some applications, provided the user experience of those clients doesn't also suffer when dealing with nodes that contain very large numbers of fields.
 
