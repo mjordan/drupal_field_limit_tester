@@ -56,25 +56,27 @@ During very long rendering of forms, I observed some unusual behavior in the dra
 
 !['Screenshot of multivalued field with drag and drop'](node_edit_form_drag_and_drop.png)
 
-Specifically, the drag-and-drop UI elements, which use JavaScript under the hood, did not render as expected. Instead, Drupal temporarily reverted to the native HTML "row widget" weight assignment elements until much later in the page rendering process near the end of the visible page rendering:
+Specifically, the drag-and-drop UI elements, which use JavaScript under the hood, did not render as expected. Instead, at the start of the form rendering process, Drupal temporarily reverted to the native HTML "row widget" weight assignment elements, only showing the expected drag-and-drop elements near the end of the form rendering process:
 
 !['Screenshot of multivalued field with row widgets'](node_edit_form_with_row_widgets.png)
 
-Based on this behavior, it seemed likely that the JavaScript used to render the drag-and-drop UI elements was implicated in the very long scripting and rendering times shown in the pie chart above. To confirm this, I dug deeper in Chrome's performance tool, which revealed that that the main JavaScript library loaded by the node edit form took approximately 30 seconds to execute of the 43 seconds required to render the edit form.
+This behavior suggested that the JavaScript used to render the drag-and-drop UI elements was implicated in the very long scripting and rendering times shown in the donut chart above. To confirm this, I dug deeper in Chrome's performance tool, which revealed that that the main JavaScript library loaded by the node edit form took approximately 30 seconds to execute of the 43 seconds required to render the edit form.
 
-To gather additional data to narrow down the impact of executing JavaScript when rendering the node edit form, I retrieved the popluated node edit form via curl, authenticated as the Drupal "admin" user. The HTML markup and node field content in this version of the form is identical to the that deliverd to a graphical browser. Since curl does not execute any JavaScript or layout rendering, it makes sense that the time required for curl to complete its request for the populated node edit form is much lower than the same request by a graphical browser:
+To gather additional data to narrow down the impact of executing JavaScript when rendering the node edit form, I retrieved the popluated node edit form via curl, authenticated as the Drupal "admin" user:
 
 !['Chart showing rendering of the GUI node edit form vs. markup and data only'](node_edit_form_gui_vs_curl.png)
 
-Despite a gap in data at 400 fields (which I explain below in the "Limitations" section), it appears that the number of fields has little effect on how long Drupal requires to assemble and serve up the populated edit form, but that rendering the form for use within a graphical web browser takes a long time.
+The HTML markup and node field content in this version of the form is identical to the that deliverd to a graphical browser. Since curl does not execute any JavaScript or layout rendering, it is reasonable to conclude that the difference in the time required for Chrome to render the node edit form compared to the time required by curl to download the identical content is attributable to executing the JavaScript and rendering tasks in Chrome. Despite a gap in data at 400 fields (which I explain below in the "Limitations" section), the impact of this set of rendering tasks increases linearly.
 
 ### Viewing node content
 
-Drupal's page caching for anonymous users is very effective, so it isn't surprising that the number of fields on a node did not increase the amount of time required to render or download the cached node content and markup. The time required to retrieve uncached node content and markup did increase with the number of fields on a node, using both Chrome and curl, but the increase was greater in Chrome than using curl, which is to be expected since it needs to render the additional fields. This chart includes data on requesting the full HTML representation of an node via curl, to provide a control for rendering the node data in a graphical browser:
+This chart shows the time required to render node content in Chrome and to download it using curl:
 
 !['Node view test results'](node-view.png)
 
 Based on this data, we see that requests for uncached nodes takes substantially longer than requests for cached nodes, for both graphical and non-graphical clients. I expected Chrome to take longer to render cached node content (the red line in the chart) as the number of fields increased, but the data shows that is not the case.
+
+Drupal's page caching for anonymous users is very effective, so it isn't surprising that the number of fields on a node did not increase the amount of time required to render or download the cached node content and markup. The time required to retrieve uncached node content and markup did increase with the number of fields on a node, using both Chrome and curl, but the increase was greater in Chrome than using curl, which is to be expected since it needs to render the additional fields. 
 
 ### REST requests
 
