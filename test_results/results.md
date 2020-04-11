@@ -18,7 +18,7 @@ To generate the data, I created a Drupal module using the `drupal_field_limit_te
    * Fetched this same content using curl with both empty and populated Drupal cache
 * Viewed (using Chrome) the node add form for my content type, as the "admin" user
 * Viewed (using Chrome) the node edit form for my content type (populated with node content), as the "admin" user
-* Downloaded (using Chrome) the node edit form for my content type (populated with node content), as the "admin" user
+* Retrieved without rendering (using Chrome) the node edit form for my content type (populated with node content), as the "admin" user
 * Using curl, issued a `GET` request to the sample node's JSON endpoint with an empty Drupal cache, authenticated as the "admin" user
 * Using curl, issued a `GET` request to the sample node's JSON endpoint with a populated Drupal cache, authenticated as the "admin" user
 * Using curl, issued a `POST` request to create a node
@@ -62,11 +62,11 @@ Specifically, the drag-and-drop UI elements, which use JavaScript under the hood
 
 This behavior suggested that the JavaScript used to render the drag-and-drop UI elements was implicated in the very long scripting and rendering times shown in the donut chart above. To confirm this, I dug deeper in Chrome's performance tool, which revealed that that the main JavaScript library loaded by the node edit form took approximately 30 seconds to execute of the 43 seconds required to render the edit form.
 
-To gather additional data to isolate the impact of executing JavaScript when rendering the node edit form, I used Chrome's network tool (hamburger menu > More tools > Developer tools > network) to retrieve the popluated node edit form as the Drupal "admin" user (using the "Finish" value, which is the sum of the retrieval times for all files referenced in the node edit form):
+To gather additional data to isolate the impact of executing JavaScript when rendering the node edit form, I used Chrome's network tool (hamburger menu > More tools > Developer tools > network) to  time how long Chrome spends retrieving *but not rendering* the popluated node edit form as the Drupal "admin" user (using the "Finish" value, which is the sum of the retrieval times for all JavaScript, CSS, image, etc. files referenced in the node edit form):
 
 !['Chart showing rendering of the GUI node edit form vs. retieving markup and data only'](node_edit_form_render_vs_download.png)
 
-The times collected in this way are for retrieval of the files only, and do not include time spent executing JavaScript or spent rendering the page. The low times to retrieve the page content compared to the long times required to render the same content confirm that the the impact of executing JavaScript and rendering the page is substantial. A more specific conclusion we can make is that the overall time consumed by these two tasks has a linear relationship to the number of fields in the edit form.
+The times collected in this way do not include time spent executing JavaScript or spent rendering the page. The low times to retrieve the page content compared to the long times required to render the same content confirm that the impact of executing JavaScript and rendering the page is substantial. A more specific conclusion we can make is that the overall time consumed by these two tasks has a linear relationship to the number of fields in the edit form.
 
 ### Viewing node content
 

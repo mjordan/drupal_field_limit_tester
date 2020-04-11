@@ -1,10 +1,10 @@
-Number of fields,Migrate 1 node from CSV,"GUI view node, anonymous, no server cache","GUI view node, anonymous, with server cache",GUI view node add form,GUI view node edit form,"curl GET view node, anonymous, no server cache","curl GET view node, anonymous, with server cache",curl GET node edit form,REST GET JSON (authenticated) no server cache,REST GET JSON (authenticated) with server cache,REST POST/add,REST PATCH/update one fiel
-100,2.526,9.665,3.235,2.182,2.889,6.466,0.051,2.542,0.355,0.131,1.696,0.597
-150,1.672,11.302,3.216,3.735,5.208,8.067,0.059,2.313,0.707,0.148,0.83,1.154
-200,1.647,11.69,3.231,5.902,8.79,10.606,0.057,2.491,0.88,0.172,0.862,0.883
-250,1.079,13.102,3.24,8.933,11.744,10.471,0.057,2.419,0.924,0.154,1.405,0.763
-300,5.889,15.68,3.258,12.045,16.099,12.068,0.059,2.901,0.892,0.159,1.441,1.021
-350,7.607,15.177,3.268,15.076,21.941,12.51,0.064,2.333,1.144,0.161,1.323,0.812
-400,4.178,19.348,3.28,20.17,27.11,13.247,0.065,,5.291,0.402,1.278,1.081
-450,3.177,19.038,3.277,24.952,35.984,15.969,0.068,2.182,1.18,0.169,2.083,0.804
-500,2.646,18.32,3.301,30.161,42.229,15.549,0.07,2.096,3.495,0.163,3.427,1.179
+Number of fields,Migrate 1 node from CSV,"GUI view node, anonymous, no server cache","GUI view node, anonymous, with server cache",GUI view node add form,GUI view node edit form,GUI retrieve node edit form,"curl GET view node, anonymous, no server cache","curl GET view node, anonymous, with server cache",REST GET JSON (authenticated) no server cache,REST GET JSON (authenticated) with server cache,REST POST/add,REST PATCH/update one field
+100,2.526,9.665,3.235,2.182,2.889,1.19,6.466,0.051,0.355,0.131,1.696,0.597
+150,1.672,11.302,3.216,3.735,5.208,1.36,8.067,0.059,0.707,0.148,0.83,1.154
+200,1.647,11.69,3.231,5.902,8.79,1.77,10.606,0.057,0.88,0.172,0.862,0.883
+250,1.079,13.102,3.24,8.933,11.744,2.35,10.471,0.057,0.924,0.154,1.405,0.763
+300,5.889,15.68,3.258,12.045,16.099,2.81,12.068,0.059,0.892,0.159,1.441,1.021
+350,7.607,15.177,3.268,15.076,21.941,3.43,12.51,0.064,1.144,0.161,1.323,0.812
+400,4.178,19.348,3.28,20.17,27.11,3.72,13.247,0.065,1.462,0.402,1.278,1.081
+450,3.177,19.038,3.277,24.952,35.984,4.38,15.969,0.068,1.18,0.169,2.083,0.804
+500,2.646,18.32,3.301,30.161,42.229,5.24,15.549,0.07,3.495,0.163,3.427,1.179
