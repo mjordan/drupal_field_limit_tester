@@ -26,7 +26,7 @@ To generate the data, I created a Drupal module using the `drupal_field_limit_te
 
 I created only a single node as test data in order to eliminate variability introduced by the number of nodes. I speculated that retrieving the same content, using the same Drupal caching, in both a graphical web browser and curl would allow me to establish a baseline time-to-completion that Drupal requires to assemble and deliver HTML markup and content, in order to compare that baseline with the time it takes for Chrome to render JavaScript and CSS.
 
-To time the tasks performed using Chrome, I used its "Performance" tool, available in the hamburger menu > More tools > Developer tools. The data I recorded was the "Total" value listed in the tool's "Summary" output. To time the tasks performed using curl, I ran the requests in conjuction with the Linux `time` command, e.g., `time curl http://localhost:8000/node/50` and used the "Real" value from this ouput.
+To time the tasks performed using Chrome, I used its "Performance" tool, available in the hamburger menu > More tools > Developer tools > Peformance. The data I recorded was the "Total" value listed in the tool's "Summary" output. To time the tasks performed using curl, I ran the requests in conjuction with the Linux `time` command, e.g., `time curl http://localhost:8000/node/50` and used the "Real" value from this ouput.
 
 I then rolled back the migration and uninstalled the module, repeating the entire set of tasks for nodes with with 100, 150, 200, 250, 300, 350, 400, 450, and 500 fields.
 
@@ -60,13 +60,13 @@ Specifically, the drag-and-drop UI elements, which use JavaScript under the hood
 
 !['Screenshot of multivalued field with row widgets'](node_edit_form_with_row_widgets.png)
 
-This behavior suggested that the JavaScript used to render the drag-and-drop UI elements was implicated in the very long scripting and rendering times shown in the donut chart above. To confirm this, I dug deeper in Chrome's performance tool, which revealed that that the main JavaScript library loaded by the node edit form took approximately 30 seconds to execute of the 43 seconds required to render the edit form.
+This behavior suggested that the JavaScript used to render the drag-and-drop UI elements was implicated in the very long scripting and rendering times shown in the donut chart above. To confirm this, I dug deeper in Chrome's Performance tool, which revealed that that the main JavaScript library loaded by the node edit form took approximately 30 seconds to execute of the 43 seconds required to render the edit form.
 
-To gather additional data to isolate the impact of executing JavaScript when rendering the node edit form, I used Chrome's network tool (hamburger menu > More tools > Developer tools > network) to time how long Chrome spends retrieving *but not rendering* the popluated node edit form (in other words, excluding the time spent executing JavaScript and time spent rendering the page). The results shown in red here are the "Finish" values provided by the network tool, which represent the sum of the retrieval times for all JavaScript, CSS, image, etc. files referenced in the node edit form:
+To isolate the impact of executing JavaScript when rendering the node edit form, I used Chrome's "Network" tool (hamburger menu > More tools > Developer tools > Network) to time how long Chrome spends retrieving *but not rendering* the popluated node edit form from Drupal. The values shown in red in the following chart are the "Finish" values provided by the Network tool, which represent the sum of the retrieval times for all JavaScript, CSS, image, etc. files referenced in the node edit form; the values in blue show the amount of time Chrome takes to render the node edit form (retrieve the form markup and data from Drupal, execute all required JavaScript, then actually render the form):
 
 !['Chart showing rendering of the GUI node edit form vs. retieving markup and data only'](node_edit_form_render_vs_download.png)
 
-The low times to retrieve the page content compared to the long times required to render the same content confirm that the impact of executing JavaScript and rendering the page is substantial. A more specific conclusion we can make is that the overall time consumed by these two tasks has a linear relationship to the number of fields in the edit form.
+The short times to retrieve the page content compared to the long times required to render the same content confirm that the impact of executing JavaScript and rendering the page is substantial. A more specific conclusion we can make is that the overall time consumed rendering the node edit form has a more or less linear relationship to the number of fields in the edit form. The same can be said of the node add form.
 
 ### Viewing node content
 
