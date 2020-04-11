@@ -18,7 +18,7 @@ To generate the data, I created a Drupal module using the `drupal_field_limit_te
    * Fetched this same content using curl with both empty and populated Drupal cache
 * Viewed (using Chrome) the node add form for my content type, as the "admin" user
 * Viewed (using Chrome) the node edit form for my content type (populated with node content), as the "admin" user
-   * Fetched this same content using curl
+* Downloaded (using Chrome) the node edit form for my content type (populated with node content), as the "admin" user
 * Using curl, issued a `GET` request to the sample node's JSON endpoint with an empty Drupal cache, authenticated as the "admin" user
 * Using curl, issued a `GET` request to the sample node's JSON endpoint with a populated Drupal cache, authenticated as the "admin" user
 * Using curl, issued a `POST` request to create a node
@@ -62,11 +62,11 @@ Specifically, the drag-and-drop UI elements, which use JavaScript under the hood
 
 This behavior suggested that the JavaScript used to render the drag-and-drop UI elements was implicated in the very long scripting and rendering times shown in the donut chart above. To confirm this, I dug deeper in Chrome's performance tool, which revealed that that the main JavaScript library loaded by the node edit form took approximately 30 seconds to execute of the 43 seconds required to render the edit form.
 
-To gather additional data to isolate the impact of executing JavaScript when rendering the node edit form, I retrieved the popluated node edit form using both Chrome and curl, in both cases authenticated as the Drupal "admin" user:
+To gather additional data to isolate the impact of executing JavaScript when rendering the node edit form, I used Chrome's network tool (hamburger menu > More tools > Developer tools > network) to retrieve the popluated node edit form as the Drupal "admin" user (using the "Finish" value, which is the sum of the retrieval times for all files referenced in the node edit form):
 
-!['Chart showing rendering of the GUI node edit form vs. markup and data only'](node_edit_form_gui_vs_curl.png)
+!['Chart showing rendering of the GUI node edit form vs. retieving markup and data only'](node_edit_form_render_vs_download.png)
 
-The HTML markup and node field content in the form are identical in both clients. Since curl does not execute any JavaScript or layout rendering, it is reasonable to conclude that the difference in the time required for Chrome to render the node edit form compared to the time required by curl to download the identical content is attributable to executing the JavaScript and rendering tasks in Chrome. Despite a gap in data at 400 fields (which I explain below in the "Limitations" section), the impact of this set of rendering tasks increases linearly.
+The times collected in this way are for retrieval of the files only, and do not include time spent executing JavaScript or spent rendering the page. The low times to retrieve the page content compared to the long times required to render the same content confirm that the the impact of executing JavaScript and rendering the page is substantial. A more specific conclusion we can make is that the overall time consumed by these two tasks has a linear relationship to the number of fields in the edit form.
 
 ### Viewing node content
 
@@ -84,8 +84,7 @@ Number of fields didn't have an appreciable impact on any of the tested REST req
 
 !['Chart showing all test results'](chart-rest.png)
 
-Requesting the JSON representation of an node (via `GET`) is fairly fast regardless of the number of fields, especially requests for cached content, and even for authenticated users. There is one anomaly (`GET` with no cache, at 400 fields), which I will explain below in the "Limitations" section. It isn't surprising that requesting the JSON via a REST request is faster than fetching a fully rendered version of the node, since the JSON representation contains less node data and no HTML markup.
-
+Requesting the JSON representation of an node (via `GET`) is fairly fast regardless of the number of fields, especially requests for cached content, and even for authenticated users. It isn't surprising that requesting the JSON via a REST request is faster than fetching a fully rendered version of the node, since the JSON representation contains less node data and no HTML markup.
 
 At 500 fields, retrieving a node's uncached JSON representation (via `GET`) and adding nodes (via `POST`) started to take a bit longer than with fewer fields, but updating a single field via `PATCH` was consistently quick all the way up to 500 fields.
 
@@ -96,7 +95,6 @@ This exploration of the practical number of fields you can attach to a Drupal co
 * It only tested the time it takes using a graphical web browser to *render* node add and edit forms. Chrome's developer tools do not provide a way (as far as I can tell) of timing form submit operations.
 * All fields attached to nodes for testing purposes are simple text fields (i.e., this study doesn't test for performance implications of other field types such as taxonomy fields).
 * While this study does control for server-side caching (in Drupal at least), it does not account for caching done by Chrome.
-* The test data contains a gap at 400 fields. During collection of the data at the 400 field point, Drupal hung while I was using curl to retrieve the populated node edit form. Likewise, at 400 fields, we see an anomalous spike in the time required to complete the REST `GET` request. I assume that these two exceptions were caused by same underlying (and undiagnosed) problem with Drupal. I decided to leave this gap in the data instead of restarting the entire 400-field test run in order to be consistent with the other data collection runs. It is unlikely the lack of one data point invalidates the trends revealed by the rest of the data.
 
 ## Conclusions
 
