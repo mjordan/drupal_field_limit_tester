@@ -26,7 +26,7 @@ To generate the data, I created a Drupal module using the `drupal_field_limit_te
 
 I created only a single node as test data in order to eliminate variability introduced by the number of nodes. I speculated that retrieving the same content, using the same Drupal caching, in both a graphical web browser and curl would allow me to establish a baseline time-to-completion that Drupal requires to assemble and deliver HTML markup and content, in order to compare that baseline with the time it takes for Chrome to render JavaScript and CSS.
 
-To time the tasks performed using Chrome, I used its "Performance" tool, available in the hamburger menu > More tools > Developer tools > Peformance. The data I recorded was the "Total" value listed in the tool's "Summary" output. To time the tasks performed using curl, I ran the requests in conjuction with the Linux `time` command, e.g., `time curl http://localhost:8000/node/50` and used the "Real" value from this ouput.
+To time the tasks performed using Chrome, I used its "Performance" tool, available in the hamburger menu > More tools > Developer tools > Peformance. The data I recorded was the "Total" value listed in the tool's "Summary" output. For one set of data points (see "Rendering the node add and edit forms" for details), I used Chrome's "Network" tool (hamburger menu > More tools > Developer tools > Network. To time the tasks performed using curl, I ran the requests in conjuction with the Linux `time` command, e.g., `time curl http://localhost:8000/node/50` and used the "Real" value from this ouput.
 
 I then rolled back the migration and uninstalled the module, repeating the entire set of tasks for nodes with with 100, 150, 200, 250, 300, 350, 400, 450, and 500 fields.
 
