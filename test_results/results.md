@@ -62,11 +62,11 @@ Specifically, the drag-and-drop UI elements, which use JavaScript under the hood
 
 This behavior suggested that the JavaScript used to render the drag-and-drop UI elements was implicated in the very long scripting and rendering times shown in the donut chart above. To confirm this, I dug deeper in Chrome's performance tool, which revealed that that the main JavaScript library loaded by the node edit form took approximately 30 seconds to execute of the 43 seconds required to render the edit form.
 
-To gather additional data to narrow down the impact of executing JavaScript when rendering the node edit form, I retrieved the popluated node edit form via curl, authenticated as the Drupal "admin" user:
+To gather additional data to isolate the impact of executing JavaScript when rendering the node edit form, I retrieved the popluated node edit form using both Chrome and curl, in both cases authenticated as the Drupal "admin" user:
 
 !['Chart showing rendering of the GUI node edit form vs. markup and data only'](node_edit_form_gui_vs_curl.png)
 
-The HTML markup and node field content in this version of the form is identical to the that deliverd to a graphical browser. Since curl does not execute any JavaScript or layout rendering, it is reasonable to conclude that the difference in the time required for Chrome to render the node edit form compared to the time required by curl to download the identical content is attributable to executing the JavaScript and rendering tasks in Chrome. Despite a gap in data at 400 fields (which I explain below in the "Limitations" section), the impact of this set of rendering tasks increases linearly.
+The HTML markup and node field content in the form are identical in both clients. Since curl does not execute any JavaScript or layout rendering, it is reasonable to conclude that the difference in the time required for Chrome to render the node edit form compared to the time required by curl to download the identical content is attributable to executing the JavaScript and rendering tasks in Chrome. Despite a gap in data at 400 fields (which I explain below in the "Limitations" section), the impact of this set of rendering tasks increases linearly.
 
 ### Viewing node content
 
