@@ -24,7 +24,7 @@ To generate the data, I created a Drupal module using the `drupal_field_limit_te
 * Using curl, issued a `POST` request to create a node
 * Using curl, issued a `PATCH` request to update a single field on a node
 
-I created only a single node as test data in order to eliminate variability introduced by the number of nodes. I speculated that retrieving the same content, using the same Drupal caching, in both a graphical web browser and curl would allow me to establish a baseline time-to-completion that Drupal requires to assemble and deliver HTML markup and content, in order to compare that baseline with the time it takes for Chrome to render JavaScript and CSS.
+Performing these tasks provided sufficient time-to-completion data to identify aspects of page rendering that define the practical maximum number of fields on a content type.
 
 To time the tasks performed using Chrome, I used its "Performance" tool, available in the hamburger menu > More tools > Developer tools > Peformance. The data I recorded was the "Total" value listed in the tool's "Summary" output. For one set of data points (see "Rendering the node add and edit forms" for details), I used Chrome's "Network" tool (hamburger menu > More tools > Developer tools > Network. To time the tasks performed using curl, I ran the requests in conjuction with the Linux `time` command, e.g., `time curl http://localhost:8000/node/50` and used the "Real" value from this ouput.
 
@@ -56,9 +56,11 @@ During very long rendering of forms, I observed some unusual behavior in the dra
 
 !['Screenshot of multivalued field with drag and drop'](node_edit_form_drag_and_drop.png)
 
-Specifically, the drag-and-drop UI elements, which use JavaScript under the hood, did not render as expected. Instead, at the start of the form rendering process, Drupal temporarily reverted to the native HTML "row widget" weight assignment elements, only showing the expected drag-and-drop elements near the end of the form rendering process:
+Specifically, the drag-and-drop UI elements, which use JavaScript under the hood, did not render as expected. Instead, at the start of the form rendering process, Drupal temporarily reverted to the native HTML "row widget" weight assignment elements:
 
 !['Screenshot of multivalued field with row widgets'](node_edit_form_with_row_widgets.png)
+
+The expected drag-and-drop UI elements eventually appeared near the end of the form rendering process.
 
 This behavior suggested that the JavaScript used to render the drag-and-drop UI elements was implicated in the very long scripting and rendering times shown in the donut chart above. To confirm this, I dug deeper in Chrome's Performance tool, which revealed that that the main JavaScript library loaded by the node edit form took approximately 30 seconds to execute of the 43 seconds required to render the edit form.
 
