@@ -56,7 +56,7 @@ During very long rendering of forms, I observed some unusual behavior in the dra
 
 !['Screenshot of multivalued field with drag and drop'](node_edit_form_drag_and_drop.png)
 
-Specifically, the drag-and-drop UI elements, which use JavaScript under the hood, did not render as expected. Instead, at the start of the form rendering process, Drupal temporarily reverted to the native HTML "row widget" weight assignment elements:
+Specifically, the drag-and-drop UI elements, which use JavaScript under the hood, did not render as expected. Instead, at the start of the form rendering process, Drupal temporarily reverted to the native HTML "row weight" form elements:
 
 !['Screenshot of multivalued field with row widgets'](node_edit_form_with_row_widgets.png)
 
